@@ -19,6 +19,7 @@ public abstract class AmazonS3Factory {
 
     public static final String ACCESS_KEY = "s3fs_access_key";
     public static final String SECRET_KEY = "s3fs_secret_key";
+    public static final String IAM_ROLE = "s3fs_iam_role";
     public static final String REQUEST_METRIC_COLLECTOR_CLASS = "s3fs_request_metric_collector_class";
     public static final String CONNECTION_TIMEOUT = "s3fs_connection_timeout";
     public static final String MAX_CONNECTIONS = "s3fs_max_connections";
@@ -66,7 +67,9 @@ public abstract class AmazonS3Factory {
 
     protected AWSCredentialsProvider getCredentialsProvider(Properties props) {
         AWSCredentialsProvider credentialsProvider;
-        if (props.getProperty(ACCESS_KEY) == null && props.getProperty(SECRET_KEY) == null)
+        if (props.getProperty(IAM_ROLE) != null) 
+        	credentialsProvider = new InstanceProfileCredentialsProvider(false);
+        else if (props.getProperty(ACCESS_KEY) == null && props.getProperty(SECRET_KEY) == null) 
             credentialsProvider = new DefaultAWSCredentialsProviderChain();
         else
             credentialsProvider = new AWSStaticCredentialsProvider(getAWSCredentials(props));
